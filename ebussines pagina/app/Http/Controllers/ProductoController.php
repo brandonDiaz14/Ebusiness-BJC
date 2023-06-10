@@ -17,7 +17,9 @@ class ProductoController extends Controller
     public function indexHome(){
         $producto = Producto::all();
         $imagen = Imagen::all();
-        $carrito = Carrito::all();
+        $carrito = Carrito::select('nombre_poducto', 'precio_producto', 'usuario', Carrito::raw('COUNT(*) AS cantidad_productos'))
+            ->groupBy('nombre_poducto', 'precio_producto', 'usuario')
+            ->get();
         return view('dashboard',compact('producto','imagen','carrito'));
     }
 
@@ -28,7 +30,20 @@ class ProductoController extends Controller
         Carrito::create($request->all());
         $producto = Producto::all();
         $imagen = Imagen::all();
-        $carrito = Carrito::all();
+        $carrito = Carrito::select('nombre_poducto', 'precio_producto', 'usuario', Carrito::raw('COUNT(*) AS cantidad_productos'))
+            ->groupBy('nombre_poducto', 'precio_producto', 'usuario')
+            ->get();
         return view('dashboard',compact('producto','imagen','carrito'));
+        indexHome();
+    }
+    public function vaciarCarrito($usuario){
+        Carrito::where('usuario', $usuario)->delete();
+        $producto = Producto::all();
+        $imagen = Imagen::all();
+        $carrito = Carrito::select('nombre_poducto', 'precio_producto', 'usuario', Carrito::raw('COUNT(*) AS cantidad_productos'))
+            ->groupBy('nombre_poducto', 'precio_producto', 'usuario')
+            ->get();
+        return view('dashboard',compact('producto','imagen','carrito'));
+        indexHome();
     }
 }
