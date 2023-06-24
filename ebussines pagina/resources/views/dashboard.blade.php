@@ -32,16 +32,50 @@
                                 <div class="block px-4 py-2 text-xs text-gray-400">
                                     {{ __('Lo que tienes en el carrito') }}
                                 </div>
-
+                                <?php 
+                                    $compra = "Deseo comprar: ";
+                                    $cantidadTotal = 0;
+                                    $precioTotal = 0;
+                                    $productosTotal = "";
+                                 ?>
                                 @foreach($carrito as $car)
-                                    <div class="block px-4 py-2 text-xs text-gray-400">
-                                        <p>{{$car->nombre_poducto }}</p>
-                                        <p>{{$car->precio_producto }}</p>
-                                        <p>cantidad: {{$car->cantidad_productos }}</p>
-
-                                    </div>
+                                    @if($car->usuario == Auth::user()->id)
+                                        <div class="block px-4 py-2 text-xs text-gray-400">
+                                            <p>{{$car->nombre_poducto}}</p>
+                                            <p>{{$car->precio_producto * $car->cantidad_productos}}</p>
+                                            <p>cantidad: {{$car->cantidad_productos}}</p>
+                                            <?php 
+                                                $compra .= $car->nombre_poducto . " (precio:" . ($car->precio_producto * $car->cantidad_productos) . ") (cantidad: " . $car->cantidad_productos . ")\n"; 
+                                                $cantidadTotal = $cantidadTotal + intval($car->cantidad_productos);
+                                                $precioTotal = $precioTotal + $car->precio_producto * $car->cantidad_productos;
+                                                $productosTotal .= $car->nombre_poducto . ",";
+                                            ?>
+                                        </div>
+                                    @endif
                                 @endforeach
-                                    <button>eliminar</button>
+                                <center>
+                                    <form action="{{ route('vaciar.carrito', ['usuario' => Auth::user()->id]) }}" method="POST">
+                                        @csrf
+                                        <button>Eliminar</button>
+                                    </form>
+                                    <a href="https://wa.me/+573224254895/?text=<?php echo urlencode($compra); ?>" target="_blank" class="btn-whatsapp">
+                                        Comprar en WhatsApp
+                                    </a>
+                                    <form action="{{route('guardar.orden')}}" method="POST" class="mr-3">
+                                        @csrf
+                                            <input type="hidden" value="Pendiente" class="form-control" name="referencia_orden">
+                                            <input type="text" class="form-control" aria-describedby="emailHelp" name="direccion">
+                                            <input type="hidden" value="{{$cantidadTotal}}" name="cantidad">
+                                            <input type="hidden" value="{{$precioTotal}}" name="precio">
+                                            <input type="hidden" value="{{Auth::user()->id}}" name="cliente_id">
+                                            <input type="hidden" value="{{$productosTotal}}" name="producto">
+                                        
+                                        <center>
+                                            <button type="submit" class="btn btn-primary" style="color: black;">Generar Orden</button>
+                                        </center>
+                                    </form>
+                                </center>
+                                
                                 <div class="border-t border-gray-200"></div>
                             </x-slot>
                         </x-dropdown>
@@ -59,17 +93,17 @@
             <div class="row">
                 @foreach($producto as $produ)
                 @if($contador == 4)
-                <div
-                    style="border-radius: 10px; display: flex; justify-content: center; background-color: black; position: relative; margin: 10px;">
-                    <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1;">
-                        <h2 class="font-semibold text-xl text-gray-800 leading-tight" style="color: black;">Encuéntranos
-                        </h2>
+                    <div
+                        style="border-radius: 10px; display: flex; justify-content: center; background-color: black; position: relative; margin: 10px;">
+                        <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1;">
+                            <h2 class="font-semibold text-xl text-gray-800 leading-tight" style="color: black;">Encuéntranos
+                            </h2>
+                        </div>
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.4944022814207!2d-74.10548368255616!3d4.683796099999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9b6b0a37d83d%3A0xf1859530a183293c!2sCra.%2076%20%2366-21%2C%20Bogot%C3%A1!5e0!3m2!1ses-419!2sco!4v1654031793807!5m2!1ses-419!2sco"
+                            width="800" height="250" style="border:0; margin: 10px; border-radius: 10px;" allowfullscreen=""
+                            loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.4944022814207!2d-74.10548368255616!3d4.683796099999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f9b6b0a37d83d%3A0xf1859530a183293c!2sCra.%2076%20%2366-21%2C%20Bogot%C3%A1!5e0!3m2!1ses-419!2sco!4v1654031793807!5m2!1ses-419!2sco"
-                        width="800" height="250" style="border:0; margin: 10px; border-radius: 10px;" allowfullscreen=""
-                        loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
                 @endif
                 <div class="col-md-3" style="border-radius: 20px;">
                     <div class="card mt-3" style="height: 600px; border-radius: 20px;">

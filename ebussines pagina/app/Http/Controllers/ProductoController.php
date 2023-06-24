@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Producto;
 use App\Models\Imagen;
 use App\Models\Carrito;
+use App\Models\Orden;
 
 class ProductoController extends Controller
 {
@@ -45,5 +46,15 @@ class ProductoController extends Controller
             ->get();
         return view('dashboard',compact('producto','imagen','carrito'));
         indexHome();
+    }
+    public function storeOrden(Request $request){
+        Orden::create($request->all());
+        $orden = Orden::all();
+        $producto = Producto::all();
+        $imagen = Imagen::all();
+        $carrito = Carrito::select('nombre_poducto', 'precio_producto', 'usuario', Carrito::raw('COUNT(*) AS cantidad_productos'))
+            ->groupBy('nombre_poducto', 'precio_producto', 'usuario')
+            ->get();
+        return view('dashboard',compact('orden','producto','imagen','carrito'));
     }
 }

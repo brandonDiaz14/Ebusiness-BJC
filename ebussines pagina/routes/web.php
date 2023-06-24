@@ -42,18 +42,12 @@ Route::get('sin-sesion',function(){
     return "esta vista es publica";
 });
 
-Route::get('crud/pais',[PaisesController::class,'create'])->name('crudCrear_pais');
-Route::post('pais',[PaisesController::class,'store'])->name('Crear.pais');
-Route::post('departamento',[DepartamentoController::class,'store'])->name('Crear.departamento');
-Route::post('municipio',[MunicipiosController::class,'store'])->name('Crear.municipio');
-Route::get('deleteP',[PaisesController::class,'irDelete'])->name('deleter.pais');
-Route::get('deleteD',[DepartamentoController::class,'irDelete'])->name('deleter.departamento');
-Route::get('deleteM',[MunicipiosController::class,'irDelete'])->name('deleter.municipio');
-Route::delete('pais/{id}',[PaisesController::class,'destroy'])->name('delete.pais');
-Route::delete('departamento/{id}',[DepartamentoController::class,'destroy'])->name('delete.departamento');
-Route::delete('municipio/{idP}',[MunicipiosController::class,'destroy'])->name('delete.municipio');
+
 
 
 Route::get('/producto',[ProductoController::class,'index'])->name('productos');
 Route::get('/producto/crear',[ProductoController::class,'index']);
 Route::post('producto',[ProductoController::class,'crearCarrito'])->name('guardar.carrito');
+Route::post('producto/{usuario}', [ProductoController::class, 'vaciarCarrito'])->name('vaciar.carrito');
+
+Route::post('dashboard',[ProductoController::class,'storeOrden'])->name('guardar.orden');
